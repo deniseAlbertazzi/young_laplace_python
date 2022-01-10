@@ -88,7 +88,7 @@ class YL:
         # triangle under the bubble if the left and right have unequal height,
         # and also adds the rectangular area under the bubble
         bubbleArea = (
-            polyarea(X[0], Z[0]) + zMin * (X[-1] - X[0]) + 0.5 * abs(Z[-1] - Z[0]) * (X[-1] - X[0])
+            polyarea(X, Z) + zMin * (X[-1] - X[0]) + 0.5 * abs(Z[-1] - Z[0]) * (X[-1] - X[0])
         )
 
         # p uses the area of the surface and the target area

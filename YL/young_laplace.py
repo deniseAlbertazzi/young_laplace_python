@@ -40,13 +40,16 @@ def young_laplace(density, surface_tension, H):
     # A in mm^2 and is the area of one side of the droplet
 
     C = 1000 * density * 9.81 / surface_tension  # 1/m^2 in SI base units
-    S_span = np.arange(0, 2, 0.0005)
-    if H > 10:
-        S_span = np.arange(0, 2, 0.00005)  # use a finer grid for large H
+    step = 0.0005
+    end_value = 2
+    if H > 10:  # use a finer grid for large H
+        step = 0.00005
+    end_value += step
 
+    S_span = np.arange(0, end_value, step)
     res = integrate.solve_ivp(
         odefcn,
-        [0, 2],
+        [0, end_value],
         [0, 0, 0, 0],
         t_eval=S_span,
         args=[H, C],
@@ -55,20 +58,20 @@ def young_laplace(density, surface_tension, H):
     )
 
     X, Z, theta, area = np.vsplit(res.y, 4)
-    X = X * 1000
-    Z = Z * 1000
-    theta = theta * 180 / np.pi
-    area = area * 1000 ** 2
+    X = X.reshape((X.size,)) * 1000
+    Z = Z.reshape((Z.size,)) * 1000
+    # theta = theta.reshape((theta.size,)) * 180 / np.pi
+    # area = area.reshape((area.size,)) * 1000 ** 2
 
     # Move Z into the first quadrant of the plot
     Z = np.amax(Z) - Z
 
     # Mirror shape to form a whole droplet
     # Exclude value at zero
-    Xflipped = -np.flipud(X[1:])
-    Zflipped = np.flipud(Z[1:])
+    Xflipped = -np.flip(X[1:])
+    Zflipped = np.flip(Z[1:])
 
-    X = np.vstack((Xflipped, X))
-    Z = np.vstack((Zflipped, Z))
+    X = np.hstack((Xflipped, X))
+    Z = np.hstack((Zflipped, Z))
 
     return Surface(X, Z)
