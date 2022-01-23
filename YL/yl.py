@@ -43,7 +43,10 @@ class YL:
         new_surface = young_laplace(self.density, self.surface_tension, H)
         new_surface, _ = self.deposit(new_surface, x + apex, surface, self.area)
         X = new_surface.X
-        return [X[-1] - X[0] - self.width, (X[-1] + X[0]) / 2 - x]
+        return [
+            X[-1] - X[0] - self.width,
+            (X[-1] + X[0]) / 2 - x,
+        ]
 
     def deposit(self, new_surface, x, surface, area):
         z0 = 0

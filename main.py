@@ -55,7 +55,7 @@ plt.ylabel("Z (mm)")
 plt.grid()
 
 for j in range(len(cladTracks)):
-    A = (j - 1) * cladW * cladOffset
+    A = j * cladW * cladOffset
     for i in range(cladTracks[j]):
         print(f"layer={j}, track={i}")
 
