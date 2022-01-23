@@ -65,7 +65,7 @@ class YL:
         return new_surface, res
 
     def cut_deposit(self, new_surface, surface):
-        for i in range(new_surface.X.size):
+        for i in range(new_surface.X.size - 1):
             if new_surface.Z[i] >= surface.f(new_surface.X[i]):
                 new_surface.X = new_surface.X[i:]
                 new_surface.Z = new_surface.Z[i:]
@@ -95,7 +95,8 @@ class YL:
         )
 
         # p uses the area of the surface and the target area
-        return bubbleArea - surface.area(X[0], X[-1]) - area
+        p = bubbleArea - surface.area(X[0], X[-1]) - area
+        return p
 
     def plot(self):
         plt.figure()
