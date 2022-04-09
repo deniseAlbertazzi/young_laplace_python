@@ -1,5 +1,4 @@
 import numpy as np
-from matplotlib import pyplot as plt
 
 from .utils import lin_interpolate
 
@@ -12,33 +11,14 @@ class Surface:
         else:
             self.Z = np.zeros(X.size)
 
-    def clean(self) -> None:
-        # If arrays are not long enough to be trimmed
-        if not len(self.X) > 3 or not len(self.Z) > 3:
-            return
+    def add(self, X, Z):
+        A = np.amin(X)
+        imin = np.where(X == A)[0][0]
+        B = np.amax(X)
+        imax = np.where(X == B)[0][0]
 
-        new_X, new_Z = [self.X[0]], [self.Z[0]]
-        # remove border values
-        middle_X, middle_Z = self.X[1:-1], self.Z[1:-1]
-
-        for x, z in zip(middle_X, middle_Z):
-            if z != 0:
-                new_X.append(x)
-                new_Z.append(z)
-
-        new_X.append(self.X[-1])
-        new_Z.append(self.Z[-1])
-
-        self.X, self.Z = new_X, new_Z
-
-    def __add__(self, surface):
-        A = np.amin(surface.X)
-        imin = np.where(surface.X == A)[0][0]
-        B = np.amax(surface.X)
-        imax = np.where(surface.X == B)[0][0]
-
-        X = surface.X[imin:imax]
-        Z = surface.Z[imin:imax]
+        X = X[imin:imax]
+        Z = Z[imin:imax]
 
         Xa = self.X - A
         Xb = self.X - B
@@ -66,9 +46,9 @@ class Surface:
             if not clad[-1]:
                 clad = clad[0:-1]
                 jmax = jmax - 1
-        Z[jmin:jmax] = clad
+        self.Z[jmin:jmax] = clad
 
-        return Surface(np.asarray(X), np.asarray(Z))
+        return self.X, self.Z
 
     def smooth(self, span):
         """Stackoverflow version of matlab's smooth"""
@@ -99,12 +79,3 @@ class Surface:
         Zb = self.f(Xb).item()
 
         return np.trapz([Za, Zm, Zb], [Xa, Xm, Xb])
-
-    def plot(self):
-        plt.figure()
-        plt.axes().set_aspect("equal", "datalim")
-        plt.title("Clad profiles using different shapes")
-        plt.xlabel("X (mm)")
-        plt.ylabel("Z (mm)")
-        plt.grid()
-        plt.plot(self.X, self.Z, "-")

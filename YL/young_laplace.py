@@ -1,7 +1,6 @@
+from typing import Tuple
 import numpy as np
 from scipy import integrate
-
-from .surface import Surface
 
 
 # odefcn is called interatively to calculate df/ds for each new step
@@ -31,7 +30,11 @@ odestop.terminal = True
 odestop.direction = 0
 
 
-def young_laplace(density, surface_tension, H):
+def young_laplace(
+    density: float,
+    surface_tension: float,
+    H: float,
+) -> Tuple[np.ndarray, np.ndarray]:
     # density in g/cm^3
     # surface_tension in N/m
     # H as the curvature in 1/m
@@ -74,4 +77,4 @@ def young_laplace(density, surface_tension, H):
     X = np.hstack((Xflipped, X))
     Z = np.hstack((Zflipped, Z))
 
-    return Surface(X, Z)
+    return X, Z

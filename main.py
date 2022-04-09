@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from YL import Surface, YL
+from YL.utils import clean
 
 # Clad width in millimeters
 cladW = 1.5
@@ -47,7 +48,7 @@ shape = YL(cladW, cladArea, density, surface_tension)
 surface = Surface(np.arange(-5, 30, 0.05))  # -5:0.05:30
 
 # Configure image
-plt.figure()
+fig = plt.figure()
 plt.axes().set_aspect("equal", "datalim")
 plt.title("Clad profiles using different shapes")
 plt.xlabel("X (mm)")
@@ -60,12 +61,12 @@ for j in range(len(cladTracks)):
         print(f"layer={j}, track={i}")
 
         # Generate a function for the shape and area of that shape
-        new_surface = shape.clad(surface, A)
-        new_surface.clean()
-        plt.plot(new_surface.X, new_surface.Z, "-")
+        X, Z = shape.clad(surface, A)
+        X, Z = clean(X, Z)
+        plt.plot(X, Z, "-")
 
         # Add the clad to the surface
-        surface = surface + new_surface
+        surface.add(X, Z)
         A = A + cladW * (1 - cladOverlap)
 
         # Optionally rasterize after every layer, to improve performance and
