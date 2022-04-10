@@ -53,6 +53,7 @@ plt.axes().set_aspect("equal", "datalim")
 plt.title("Clad profiles using different shapes")
 plt.xlabel("X (mm)")
 plt.ylabel("Z (mm)")
+plt.xlim((-2, 2))
 plt.grid()
 
 for j in range(len(cladTracks)):

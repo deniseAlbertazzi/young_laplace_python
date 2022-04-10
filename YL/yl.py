@@ -60,7 +60,7 @@ class YL:
         ### HERE
         res = optimize.least_squares(
             self.solve_deposit,
-            z0,
+            x0=z0,
             args=(X, Z, surface, area),
             bounds=(zmin, zmax),
         )
@@ -94,15 +94,15 @@ class YL:
         # edge-case: only cut when it actually penetrates into the surface
         if z.item() < 0:
             X, Z = self.cut_deposit(X, Z, surface)
+            plt.plot(X, Z)
+            plt.show(block=False)
         zMin = np.minimum(Z[0], Z[-1])
 
         # bubbleArea contains the area of the bubble itself and adds the
         # triangle under the bubble if the left and right have unequal height,
         # and also adds the rectangular area under the bubble
         bubbleArea = (
-            polyarea(X, Z)
-            + zMin * (X[-1] - X[0])
-            + 0.5 * abs(Z[-1] - Z[0]) * (X[-1] - X[0])
+            polyarea(X, Z) + zMin * (X[-1] - X[0]) + 0.5 * abs(Z[-1] - Z[0]) * (X[-1] - X[0])
         )
 
         # p uses the area of the surface and the target area
