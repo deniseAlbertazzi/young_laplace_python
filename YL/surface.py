@@ -39,13 +39,6 @@ class Surface:
 
         clad = lin_interpolate(X, Z, self.X[jmin:jmax])
 
-        if len(clad) > 1:
-            if not clad[0]:
-                clad = clad[1:]
-                jmin = jmin + 1
-            if not clad[-1]:
-                clad = clad[0:-1]
-                jmax = jmax - 1
         self.Z[jmin:jmax] = clad
 
         return self.X, self.Z

@@ -8,17 +8,17 @@ from YL.utils import clean
 cladW = 1.5
 
 # Clad area in millimeters^2
-cladArea = 1.1
+cladArea = 2
 
 # Clad overlap in percentage of cladW
 cladOverlap = 0.10
 
 # Clad tracks and layers
 # [n-of-tracks, n-of-tracks, n-of-tracks]
-cladTracks = np.array([1])
+cladTracks = np.array([2])
 
 # Clad offset if the offset for subsequent layers in percentage of cladW
-cladOffset = 0.1
+cladOffset = 0.0
 # must be with a decimal dot
 
 # Material density in g/cm^3
@@ -53,7 +53,6 @@ plt.axes().set_aspect("equal", "datalim")
 plt.title("Clad profiles using different shapes")
 plt.xlabel("X (mm)")
 plt.ylabel("Z (mm)")
-plt.xlim((-2, 2))
 plt.grid()
 
 for j in range(len(cladTracks)):

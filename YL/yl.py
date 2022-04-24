@@ -75,7 +75,7 @@ class YL:
         self,
         X: np.ndarray,
         Z: np.ndarray,
-        surface,
+        surface: Surface,
     ) -> Tuple[np.ndarray, np.ndarray]:
         for i, z in enumerate(Z):
             if z >= surface.f(X[i]):
@@ -84,27 +84,30 @@ class YL:
                 break
         for i, z in sorted(enumerate(Z), reverse=True):
             if z >= surface.f(X[i]):
-                X = np.asarray(X[:i])
-                Z = np.asarray(Z[:i])
+                X = np.asarray(X[: i + 1])
+                Z = np.asarray(Z[: i + 1])
                 break
         return X, Z
 
     def solve_deposit(self, z, X, Z, surface, area):
-        Z += z
+        new_Z = Z.copy()
+        new_X = X.copy()
+        new_Z += z
         # edge-case: only cut when it actually penetrates into the surface
         if z.item() < 0:
-            X, Z = self.cut_deposit(X, Z, surface)
-            plt.plot(X, Z)
-            plt.show(block=False)
-        zMin = np.minimum(Z[0], Z[-1])
+            new_X, new_Z = self.cut_deposit(new_X, new_Z, surface)
+        zMin = np.minimum(new_Z[0], new_Z[-1])
+        # plt.plot(X, Z, "-")
 
         # bubbleArea contains the area of the bubble itself and adds the
         # triangle under the bubble if the left and right have unequal height,
         # and also adds the rectangular area under the bubble
         bubbleArea = (
-            polyarea(X, Z) + zMin * (X[-1] - X[0]) + 0.5 * abs(Z[-1] - Z[0]) * (X[-1] - X[0])
+            polyarea(new_X, new_Z)
+            + zMin * (new_X[-1] - new_X[0])
+            + 0.5 * abs(new_Z[-1] - new_Z[0]) * (new_X[-1] - new_X[0])
         )
 
         # p uses the area of the surface and the target area
-        p = bubbleArea - surface.area(X[0], X[-1]) - area
+        p = bubbleArea - surface.area(new_X[0], new_X[-1]) - area
         return p
