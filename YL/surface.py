@@ -56,19 +56,11 @@ class Surface:
         return lin_interpolate(self.X, self.Z, x)
 
     def area(self, Xa, Xb):
-        Xm = None
-        Zm = None
-        for i, x in enumerate(self.X):
-            if Xa < x < Xb:
-                Xm = x
-                Zm = self.Z[i]
-                break
-
-        if not Xm:
-            Xm = (Xa + Xb) / 2
-            Zm = self.f(Xm).item()
+        ind = np.logical_and(Xa < self.X, self.X < Xb)
+        Xm = self.X[ind]
+        Zm = self.Z[ind]
 
         Za = self.f(Xa).item()
         Zb = self.f(Xb).item()
 
-        return np.trapz([Za, Zm, Zb], [Xa, Xm, Xb])
+        return np.trapz([Za] + Zm + [Zb], [Xa] + Xm + [Xb])

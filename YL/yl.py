@@ -77,17 +77,9 @@ class YL:
         Z: np.ndarray,
         surface: Surface,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        for i, z in enumerate(Z):
-            if z >= surface.f(X[i]):
-                X = np.asarray(X[i:])
-                Z = np.asarray(Z[i:])
-                break
-        for i, z in sorted(enumerate(Z), reverse=True):
-            if z >= surface.f(X[i]):
-                X = np.asarray(X[: i + 1])
-                Z = np.asarray(Z[: i + 1])
-                break
-        return X, Z
+        i = next(i for i, z in enumerate(Z) if z >= surface.f(X[i]))
+        j = next(j for j, z in sorted(enumerate(Z), reverse=True) if z >= surface.f(X[j]))
+        return X[i : j + 1], Z[i : j + 1]
 
     def solve_deposit(self, z, X, Z, surface, area):
         new_Z = Z.copy()
@@ -97,7 +89,6 @@ class YL:
         if z.item() < 0:
             new_X, new_Z = self.cut_deposit(new_X, new_Z, surface)
         zMin = np.minimum(new_Z[0], new_Z[-1])
-        # plt.plot(X, Z, "-")
 
         # bubbleArea contains the area of the bubble itself and adds the
         # triangle under the bubble if the left and right have unequal height,
@@ -110,4 +101,8 @@ class YL:
 
         # p uses the area of the surface and the target area
         p = bubbleArea - surface.area(new_X[0], new_X[-1]) - area
+
+        # if np.average(X) > 1:
+        #     print(surface.area(new_X[0], new_X[-1]))
+        #     plt.plot(X, Z, "-")
         return p
