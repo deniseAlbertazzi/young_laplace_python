@@ -13,35 +13,19 @@ class Surface:
 
     def add(self, X, Z):
         A = np.amin(X)
-        imin = np.where(X == A)[0][0]
+        imin = np.argmin(X)
         B = np.amax(X)
-        imax = np.where(X == B)[0][0]
+        imax = np.argmax(X)
 
-        X = X[imin:imax]
-        Z = Z[imin:imax]
+        Xa = abs(self.X - A)
+        Xb = abs(self.X - B)
 
-        Xa = self.X - A
-        Xb = self.X - B
-        Xa_min = abs(Xa).min(0)
-        Xb_min = abs(Xb).min(0)
+        jmin = np.argmin(Xa)
+        jmax = np.argmin(Xb)
 
-        jmin = np.where(Xa == Xa_min)[0]
-        jmax = np.where(Xb == Xb_min)[0]
-
-        if not jmin.size:
-            jmin = np.where(Xa == -Xa_min)[0]
-
-        if not jmax.size:
-            jmax = np.where(Xb == -Xb_min)[0]
-
-        jmin = jmin[0]
-        jmax = jmax[0]
-
-        clad = lin_interpolate(X, Z, self.X[jmin:jmax])
+        clad = lin_interpolate(X[imin:imax], Z[imin:imax], self.X[jmin:jmax])
 
         self.Z[jmin:jmax] = clad
-
-        return self.X, self.Z
 
     def smooth(self, span):
         """Stackoverflow version of matlab's smooth"""
@@ -63,4 +47,7 @@ class Surface:
         Za = self.f(Xa).item()
         Zb = self.f(Xb).item()
 
-        return np.trapz([Za] + Zm + [Zb], [Xa] + Xm + [Xb])
+        return np.trapz(
+            np.concatenate((np.array([Za]), Zm, np.array([Zb]))),
+            np.concatenate((np.array([Xa]), Xm, np.array([Xb]))),
+        )
